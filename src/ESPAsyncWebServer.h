@@ -437,7 +437,7 @@ class AsyncWebServer {
 
     AsyncStaticWebHandler& serveStatic(const char* uri, fs::FS& fs, const char* path, const char* cache_control = NULL);
 #ifdef ASYNCWEBSERVER_SDFAT_SUPPORT
-   AsyncStaticSdFatWebHandler& serveStatic(const char* uri, const char* path, const char* cache_control = NULL);
+   AsyncStaticSdFatWebHandler& serveStatic(const char* uri, SdFat *sdfat, const char* path, const char* cache_control = NULL);
 #endif
     void onNotFound(ArRequestHandlerFunction fn);  //called when handler is not assigned
     void onFileUpload(ArUploadHandlerFunction fn); //handle file uploads

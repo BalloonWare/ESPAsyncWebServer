@@ -24,9 +24,11 @@
 #include "WebHandlerImpl.h"
 #include "SdFatConfig.h"
 
+//  _fs(sdfat), 
+
 AsyncStaticSdFatWebHandler::AsyncStaticSdFatWebHandler(
-    const char *uri, const char *path, const char *cache_control)
-    : _uri(uri), _path(path), _default_file("index.htm"),
+    const char *uri, SdFat *sdfat, const char *path, const char *cache_control)
+    : _fs(sdfat),_uri(uri),_path(path), _default_file("index.htm"),
       _cache_control(cache_control), _last_modified(""), _callback(nullptr) {
   // Ensure leading '/'
   if (_uri.length() == 0 || _uri[0] != '/')
@@ -160,17 +162,17 @@ bool AsyncStaticSdFatWebHandler::_fileExists(AsyncWebServerRequest *request,
   String gzip = path + ".gz";
 
   if (_gzipFirst) {
-    request->_sd_tempFile = _fs.open(gzip, O_RDONLY);
+    request->_sd_tempFile = _fs->open(gzip, O_RDONLY);
     gzipFound = FILE_IS_REAL(request->_sd_tempFile);
     if (!gzipFound) {
-      request->_sd_tempFile = _fs.open(path, O_RDONLY);
+      request->_sd_tempFile = _fs->open(path, O_RDONLY);
       fileFound = FILE_IS_REAL(request->_sd_tempFile);
     }
   } else {
-    request->_sd_tempFile = _fs.open(path, O_RDONLY);
+    request->_sd_tempFile = _fs->open(path, O_RDONLY);
     fileFound = FILE_IS_REAL(request->_sd_tempFile);
     if (!fileFound) {
-      request->_sd_tempFile = _fs.open(gzip, O_RDONLY);
+      request->_sd_tempFile = _fs->open(gzip, O_RDONLY);
       gzipFound = FILE_IS_REAL(request->_sd_tempFile);
     }
   }
@@ -262,11 +264,11 @@ void AsyncStaticSdFatWebHandler::handleRequest(AsyncWebServerRequest *request) {
   }
 }
 
-SdFat AsyncStaticSdFatWebHandler::_fs;
+// SdFat AsyncStaticSdFatWebHandler::_fs;
 
-bool AsyncStaticSdFatWebHandler::begin(SdSpiConfig spiConfig) {
-  return _fs.begin(spiConfig);
-}
+// bool AsyncStaticSdFatWebHandler::begin(SdSpiConfig spiConfig) {
+//   return _fs.begin(spiConfig);
+// }
 
 
 #endif

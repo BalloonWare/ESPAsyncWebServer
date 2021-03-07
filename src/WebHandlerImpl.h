@@ -82,6 +82,7 @@ private:
   uint8_t _countBits(const uint8_t value) const;
 
 protected:
+  SdFat *_fs;
   String _uri;
   String _path;
   String _default_file;
@@ -93,11 +94,15 @@ protected:
   uint8_t _gzipStats;
 
 public:
-  static SdFat _fs;
 
-  AsyncStaticSdFatWebHandler(const char *uri, const char *path,
+
+  AsyncStaticSdFatWebHandler(const char *uri, SdFat *sdfat, const char *path,
                              const char *cache_control);
-  bool begin(SdSpiConfig spiConfig);
+  // AsyncStaticSdFatWebHandler(SdFat &sdfat, const char *uri, const char *path,
+  //                            const char *cache_control);
+
+
+  // bool begin(SdSpiConfig spiConfig);
   virtual bool canHandle(AsyncWebServerRequest *request) override final;
   virtual void handleRequest(AsyncWebServerRequest *request) override final;
   AsyncStaticSdFatWebHandler &setIsDir(bool isDir);
