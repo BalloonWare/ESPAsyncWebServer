@@ -167,6 +167,8 @@ class AsyncWebSocketClient {
     uint8_t _pstate;
     AwsFrameInfo _pinfo;
 
+    void *_userdata;
+
     uint32_t _lastMessageTime;
     uint32_t _keepAlivePeriod;
 
@@ -187,6 +189,9 @@ class AsyncWebSocketClient {
     AsyncClient* client(){ return _client; }
     AsyncWebSocket *server(){ return _server; }
     AwsFrameInfo const &pinfo() const { return _pinfo; }
+
+    void *userData() { return _userdata; }
+    void setUserData(void *p) { _userdata = p; }
 
     IPAddress remoteIP();
     uint16_t  remotePort();
