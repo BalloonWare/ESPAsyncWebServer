@@ -18,14 +18,16 @@
   "platforms": ["espressif8266", "espressif32", "libretuya"],
   "dependencies": [
     {
-      "owner": "ottowinter",
-      "name": "ESPAsyncTCP-esphome",
+      "owner": "me-no-dev",
+      "name": "ESPAsyncTCP",
+      "version": "^1.2.2",
       "platforms": "espressif8266"
     },
     {
-      "owner": "esphome",
-      "name": "AsyncTCP-esphome",
-      "platforms": ["espressif32", "libretuya"]
+      "owner": "me-no-dev",      
+      "name": "AsyncTCP",
+      "version": "^1.1.1",
+      "platforms": "espressif32"
     },
     {
       "name": "Hash",
