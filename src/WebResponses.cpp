@@ -712,6 +712,149 @@ size_t AsyncFileResponse::_fillBuffer(uint8_t *data, size_t len) {
   return _content.read(data, len);
 }
 
+
+#ifdef ASYNCWEBSERVER_SDFAT_SUPPORT
+void AsyncSdFatFileResponse::_setContentType(const String &path) {
+  if (path.endsWith(".html"))
+    _contentType = "text/html";
+  else if (path.endsWith(".htm"))
+    _contentType = "text/html";
+  else if (path.endsWith(".css"))
+    _contentType = "text/css";
+  else if (path.endsWith(".json"))
+    _contentType = "application/json";
+  else if (path.endsWith(".js"))
+    _contentType = "application/javascript";
+  else if (path.endsWith(".png"))
+    _contentType = "image/png";
+  else if (path.endsWith(".gif"))
+    _contentType = "image/gif";
+  else if (path.endsWith(".jpg"))
+    _contentType = "image/jpeg";
+  else if (path.endsWith(".ico"))
+    _contentType = "image/x-icon";
+  else if (path.endsWith(".svg"))
+    _contentType = "image/svg+xml";
+  else if (path.endsWith(".eot"))
+    _contentType = "font/eot";
+  else if (path.endsWith(".woff"))
+    _contentType = "font/woff";
+  else if (path.endsWith(".woff2"))
+    _contentType = "font/woff2";
+  else if (path.endsWith(".ttf"))
+    _contentType = "font/ttf";
+  else if (path.endsWith(".xml"))
+    _contentType = "text/xml";
+  else if (path.endsWith(".pdf"))
+    _contentType = "application/pdf";
+  else if (path.endsWith(".zip"))
+    _contentType = "application/zip";
+  else if (path.endsWith(".gz"))
+    _contentType = "application/x-gzip";
+  else
+    _contentType = "text/plain";
+}
+
+#if 0
+AsyncSdFatFileResponse::AsyncSdFatFileResponse(const String &path,
+                                               const String &contentType,
+                                               bool download,
+                                               AwsTemplateProcessor callback,
+                                               uint64_t offset, uint64_t end)
+    : AsyncAbstractResponse(callback) {
+  DEBUGF("AsyncSdFatFileResponse(FS &fs,..): not implemented yet\n");
+
+  _code = 200;
+  _path = path;
+
+  if (!download && !fs.exists(_path) && fs.exists(_path + ".gz")) {
+    _path = _path + ".gz";
+    addHeader("Content-Encoding", "gzip");
+    _callback = nullptr; // Unable to process zipped templates
+    _sendContentLength = true;
+    _chunked = false;
+  }
+
+  if (offset || end) { // a range request
+    _content = fs.open(_path, "rb");
+    _content.seek(offset);
+    _contentLength = end - offset + 1;
+  } else {
+    _content = fs.open(_path, "r");
+    _contentLength = _content.size();
+  }
+
+  if (contentType == "")
+    _setContentType(path);
+  else
+    _contentType = contentType;
+
+  int filenameStart = path.lastIndexOf('/') + 1;
+  char buf[26 + path.length() - filenameStart];
+  char *filename = (char *)path.c_str() + filenameStart;
+
+  if (download) {
+    // set filename and force download
+    snprintf(buf, sizeof(buf), "attachment; filename=\"%s\"", filename);
+  } else {
+    // set filename and force rendering
+    snprintf(buf, sizeof(buf), "inline; filename=\"%s\"", filename);
+  }
+  // addHeader("Content-Disposition", buf);
+}
+#endif
+
+AsyncSdFatFileResponse::AsyncSdFatFileResponse(
+    SdBaseFile content, const String &path, const String &contentType,
+    bool download, AwsTemplateProcessor callback, uint64_t offset, uint64_t end)
+    : AsyncAbstractResponse(callback) {
+  _code = 200;
+  _path = path;
+  char *s = (char *)malloc(FAT_MAX_LFN_LENGTH);
+  content.getName(s, FAT_MAX_LFN_LENGTH);
+  String name(s);
+  free(s);
+
+  DEBUGF("AsyncSdFatFileResponse: '%s' offset=%llu end=%llu\n", 
+    name.c_str(), offset, end);
+
+  if (!download && name.endsWith(".gz") && !path.endsWith(".gz")) {
+    addHeader("Content-Encoding", "gzip");
+    _callback = nullptr; // Unable to process gzipped templates
+    _sendContentLength = true;
+    _chunked = false;
+  }
+  _content = content;
+
+  if (offset || end) { // a range request
+    _content.seekSet(offset);
+    _contentLength = end - offset + 1;
+  } else {
+    _contentLength = _content.fileSize();
+  }
+
+  if (contentType == "")
+    _setContentType(path);
+  else
+    _contentType = contentType;
+
+  int filenameStart = path.lastIndexOf('/') + 1;
+  char buf[26 + path.length() - filenameStart];
+  char *filename = (char *)path.c_str() + filenameStart;
+
+  if (download) {
+    snprintf(buf, sizeof(buf), "attachment; filename=\"%s\"", filename);
+  } else {
+    snprintf(buf, sizeof(buf), "inline; filename=\"%s\"", filename);
+  }
+  // addHeader("Content-Disposition", buf);
+}
+
+size_t AsyncSdFatFileResponse::_fillBuffer(uint8_t *data, size_t len) {
+  return _content.read(data, len);
+}
+ AsyncSdFatFileResponse::~AsyncSdFatFileResponse() {}
+#endif
 /*
  * Stream Response
  * */

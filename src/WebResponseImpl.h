@@ -79,6 +79,24 @@ class AsyncFileResponse: public AsyncAbstractResponse {
     virtual size_t _fillBuffer(uint8_t *buf, size_t maxLen) override;
 };
 
+#ifdef ASYNCWEBSERVER_SDFAT_SUPPORT
+
+class AsyncSdFatFileResponse: public AsyncAbstractResponse {
+  using File = fs::File;
+  using FS = fs::FS;
+  private:
+    SdBaseFile _content;
+    String _path;
+    void _setContentType(const String& path);
+  public:
+    // AsyncSdFatFileResponse(FS &fs, const String& path, const String& contentType=String(), bool download=false, AwsTemplateProcessor callback=nullptr, uint64_t offset = 0, uint64_t end = 0);
+    AsyncSdFatFileResponse(SdBaseFile content, const String& path, const String& contentType=String(), bool download=false, AwsTemplateProcessor callback=nullptr, uint64_t offset = 0, uint64_t end = 0);
+    ~AsyncSdFatFileResponse();
+    bool _sourceValid() const { return !!(_content); }
+    virtual size_t _fillBuffer(uint8_t *buf, size_t maxLen) override;
+};
+#endif
+
 class AsyncStreamResponse: public AsyncAbstractResponse {
   private:
     Stream *_content;

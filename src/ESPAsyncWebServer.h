@@ -38,13 +38,21 @@
 #error Platform not supported
 #endif
 
+#ifdef ASYNCWEBSERVER_SDFAT_SUPPORT
+#include "SdFat.h"
+#endif
+
 #ifdef ASYNCWEBSERVER_REGEX
 #define ASYNCWEBSERVER_REGEX_ATTRIBUTE
 #else
 #define ASYNCWEBSERVER_REGEX_ATTRIBUTE __attribute__((warning("ASYNCWEBSERVER_REGEX not defined")))
 #endif
 
-#define DEBUGF(...) //Serial.printf(__VA_ARGS__)
+#ifdef ASYNCWEBSERVER_DEBUG
+#define DEBUGF(...) Serial.printf(__VA_ARGS__)
+#else
+#define DEBUGF(...)
+#endif
 
 class AsyncWebServer;
 class AsyncWebServerRequest;
@@ -54,6 +62,7 @@ class AsyncWebParameter;
 class AsyncWebRewrite;
 class AsyncWebHandler;
 class AsyncStaticWebHandler;
+class AsyncStaticSdFatWebHandler;
 class AsyncCallbackWebHandler;
 class AsyncResponseStream;
 
@@ -202,6 +211,7 @@ class AsyncWebServerRequest {
 
   public:
     File _tempFile;
+    SdBaseFile _sd_tempFile;
     void *_tempObject;
 
     AsyncWebServerRequest(AsyncWebServer*, AsyncClient*);
@@ -426,7 +436,9 @@ class AsyncWebServer {
     AsyncCallbackWebHandler& on(const char* uri, WebRequestMethodComposite method, ArRequestHandlerFunction onRequest, ArUploadHandlerFunction onUpload, ArBodyHandlerFunction onBody);
 
     AsyncStaticWebHandler& serveStatic(const char* uri, fs::FS& fs, const char* path, const char* cache_control = NULL);
-
+#ifdef ASYNCWEBSERVER_SDFAT_SUPPORT
+   AsyncStaticSdFatWebHandler& serveStatic(const char* uri, const char* path, const char* cache_control = NULL);
+#endif
     void onNotFound(ArRequestHandlerFunction fn);  //called when handler is not assigned
     void onFileUpload(ArUploadHandlerFunction fn); //handle file uploads
     void onRequestBody(ArBodyHandlerFunction fn); //handle posts with plain body content (JSON often transmitted this way as a request)

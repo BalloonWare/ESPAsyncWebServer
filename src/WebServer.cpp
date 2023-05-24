@@ -168,6 +168,17 @@ AsyncStaticWebHandler& AsyncWebServer::serveStatic(const char* uri, fs::FS& fs, 
   return *handler;
 }
 
+#ifdef ASYNCWEBSERVER_SDFAT_SUPPORT
+AsyncStaticSdFatWebHandler& AsyncWebServer::serveStatic(const char* uri, const char* path, const char* cache_control){
+  AsyncStaticSdFatWebHandler* handler = new AsyncStaticSdFatWebHandler(uri, path, cache_control);
+  addHandler(handler);
+  return *handler;
+}
+#endif
+
+
+
+
 void AsyncWebServer::onNotFound(ArRequestHandlerFunction fn){
   _catchAllHandler->onRequest(fn);
 }
