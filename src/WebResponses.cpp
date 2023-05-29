@@ -582,45 +582,49 @@ AsyncFileResponse::~AsyncFileResponse() {
     _content.close();
 }
 
-void AsyncFileResponse::_setContentType(const String &path) {
+static const char *_content_type(const String &path) {
   if (path.endsWith(".html"))
-    _contentType = "text/html";
+    return "text/html";
   else if (path.endsWith(".htm"))
-    _contentType = "text/html";
+    return "text/html";
   else if (path.endsWith(".css"))
-    _contentType = "text/css";
+    return "text/css";
   else if (path.endsWith(".json"))
-    _contentType = "application/json";
+    return "application/json";
   else if (path.endsWith(".js"))
-    _contentType = "application/javascript";
+    return "application/javascript";
   else if (path.endsWith(".png"))
-    _contentType = "image/png";
+    return "image/png";
   else if (path.endsWith(".gif"))
-    _contentType = "image/gif";
+    return "image/gif";
   else if (path.endsWith(".jpg"))
-    _contentType = "image/jpeg";
+    return "image/jpeg";
   else if (path.endsWith(".ico"))
-    _contentType = "image/x-icon";
+    return "image/x-icon";
   else if (path.endsWith(".svg"))
-    _contentType = "image/svg+xml";
+    return "image/svg+xml";
   else if (path.endsWith(".eot"))
-    _contentType = "font/eot";
+    return "font/eot";
   else if (path.endsWith(".woff"))
-    _contentType = "font/woff";
+    return "font/woff";
   else if (path.endsWith(".woff2"))
-    _contentType = "font/woff2";
+    return "font/woff2";
   else if (path.endsWith(".ttf"))
-    _contentType = "font/ttf";
+    return "font/ttf";
   else if (path.endsWith(".xml"))
-    _contentType = "text/xml";
+    return "text/xml";
   else if (path.endsWith(".pdf"))
-    _contentType = "application/pdf";
+    return "application/pdf";
   else if (path.endsWith(".zip"))
-    _contentType = "application/zip";
+    return "application/zip";
   else if (path.endsWith(".gz"))
-    _contentType = "application/x-gzip";
+    return "application/x-gzip";
   else
-    _contentType = "text/plain";
+    return "text/plain";
+}
+
+void AsyncFileResponse::_setContentType(const String &path) {
+  _contentType = _content_type(path);
 }
 
 AsyncFileResponse::AsyncFileResponse(FS &fs, const String &path,
@@ -715,94 +719,8 @@ size_t AsyncFileResponse::_fillBuffer(uint8_t *data, size_t len) {
 
 #ifdef ASYNCWEBSERVER_SDFAT_SUPPORT
 void AsyncSdFatFileResponse::_setContentType(const String &path) {
-  if (path.endsWith(".html"))
-    _contentType = "text/html";
-  else if (path.endsWith(".htm"))
-    _contentType = "text/html";
-  else if (path.endsWith(".css"))
-    _contentType = "text/css";
-  else if (path.endsWith(".json"))
-    _contentType = "application/json";
-  else if (path.endsWith(".js"))
-    _contentType = "application/javascript";
-  else if (path.endsWith(".png"))
-    _contentType = "image/png";
-  else if (path.endsWith(".gif"))
-    _contentType = "image/gif";
-  else if (path.endsWith(".jpg"))
-    _contentType = "image/jpeg";
-  else if (path.endsWith(".ico"))
-    _contentType = "image/x-icon";
-  else if (path.endsWith(".svg"))
-    _contentType = "image/svg+xml";
-  else if (path.endsWith(".eot"))
-    _contentType = "font/eot";
-  else if (path.endsWith(".woff"))
-    _contentType = "font/woff";
-  else if (path.endsWith(".woff2"))
-    _contentType = "font/woff2";
-  else if (path.endsWith(".ttf"))
-    _contentType = "font/ttf";
-  else if (path.endsWith(".xml"))
-    _contentType = "text/xml";
-  else if (path.endsWith(".pdf"))
-    _contentType = "application/pdf";
-  else if (path.endsWith(".zip"))
-    _contentType = "application/zip";
-  else if (path.endsWith(".gz"))
-    _contentType = "application/x-gzip";
-  else
-    _contentType = "text/plain";
+  _contentType = _content_type(path);
 }
-
-#if 0
-AsyncSdFatFileResponse::AsyncSdFatFileResponse(const String &path,
-                                               const String &contentType,
-                                               bool download,
-                                               AwsTemplateProcessor callback,
-                                               uint64_t offset, uint64_t end)
-    : AsyncAbstractResponse(callback) {
-  DEBUGF("AsyncSdFatFileResponse(FS &fs,..): not implemented yet\n");
-
-  _code = 200;
-  _path = path;
-
-  if (!download && !fs.exists(_path) && fs.exists(_path + ".gz")) {
-    _path = _path + ".gz";
-    addHeader("Content-Encoding", "gzip");
-    _callback = nullptr; // Unable to process zipped templates
-    _sendContentLength = true;
-    _chunked = false;
-  }
-
-  if (offset || end) { // a range request
-    _content = fs.open(_path, "rb");
-    _content.seek(offset);
-    _contentLength = end - offset + 1;
-  } else {
-    _content = fs.open(_path, "r");
-    _contentLength = _content.size();
-  }
-
-  if (contentType == "")
-    _setContentType(path);
-  else
-    _contentType = contentType;
-
-  int filenameStart = path.lastIndexOf('/') + 1;
-  char buf[26 + path.length() - filenameStart];
-  char *filename = (char *)path.c_str() + filenameStart;
-
-  if (download) {
-    // set filename and force download
-    snprintf(buf, sizeof(buf), "attachment; filename=\"%s\"", filename);
-  } else {
-    // set filename and force rendering
-    snprintf(buf, sizeof(buf), "inline; filename=\"%s\"", filename);
-  }
-  // addHeader("Content-Disposition", buf);
-}
-#endif
 
 AsyncSdFatFileResponse::AsyncSdFatFileResponse(
     SdBaseFile content, const String &path, const String &contentType,

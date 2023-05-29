@@ -178,7 +178,6 @@ AsyncStaticSdFatWebHandler& AsyncWebServer::serveStatic(const char* uri, SdFat *
 
 
 
-
 void AsyncWebServer::onNotFound(ArRequestHandlerFunction fn){
   _catchAllHandler->onRequest(fn);
 }

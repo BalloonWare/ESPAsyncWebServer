@@ -101,8 +101,6 @@ public:
   // AsyncStaticSdFatWebHandler(SdFat &sdfat, const char *uri, const char *path,
   //                            const char *cache_control);
 
-
-  // bool begin(SdSpiConfig spiConfig);
   virtual bool canHandle(AsyncWebServerRequest *request) override final;
   virtual void handleRequest(AsyncWebServerRequest *request) override final;
   AsyncStaticSdFatWebHandler &setIsDir(bool isDir);

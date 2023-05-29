@@ -89,7 +89,6 @@ class AsyncSdFatFileResponse: public AsyncAbstractResponse {
     String _path;
     void _setContentType(const String& path);
   public:
-    // AsyncSdFatFileResponse(FS &fs, const String& path, const String& contentType=String(), bool download=false, AwsTemplateProcessor callback=nullptr, uint64_t offset = 0, uint64_t end = 0);
     AsyncSdFatFileResponse(SdBaseFile content, const String& path, const String& contentType=String(), bool download=false, AwsTemplateProcessor callback=nullptr, uint64_t offset = 0, uint64_t end = 0);
     ~AsyncSdFatFileResponse();
     bool _sourceValid() const { return !!(_content); }
