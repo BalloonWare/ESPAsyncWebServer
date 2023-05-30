@@ -18,13 +18,11 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-#ifdef ASYNCWEBSERVER_SDFAT_SUPPORT
+#if ASYNCWEBSERVER_SDFAT_SUPPORT
 
 #include "ESPAsyncWebServer.h"
 #include "WebHandlerImpl.h"
 #include "SdFatConfig.h"
-
-//  _fs(sdfat), 
 
 AsyncStaticSdFatWebHandler::AsyncStaticSdFatWebHandler(
     const char *uri, SdFat *sdfat, const char *path, const char *cache_control)

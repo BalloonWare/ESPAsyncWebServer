@@ -717,7 +717,7 @@ size_t AsyncFileResponse::_fillBuffer(uint8_t *data, size_t len) {
 }
 
 
-#ifdef ASYNCWEBSERVER_SDFAT_SUPPORT
+#if ASYNCWEBSERVER_SDFAT_SUPPORT
 void AsyncSdFatFileResponse::_setContentType(const String &path) {
   _contentType = _content_type(path);
 }

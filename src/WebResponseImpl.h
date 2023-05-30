@@ -79,7 +79,7 @@ class AsyncFileResponse: public AsyncAbstractResponse {
     virtual size_t _fillBuffer(uint8_t *buf, size_t maxLen) override;
 };
 
-#ifdef ASYNCWEBSERVER_SDFAT_SUPPORT
+#if ASYNCWEBSERVER_SDFAT_SUPPORT
 
 class AsyncSdFatFileResponse: public AsyncAbstractResponse {
   using File = fs::File;

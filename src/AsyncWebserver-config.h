@@ -1,0 +1,25 @@
+#pragma once
+
+#ifndef ASYNCWEBSERVER_SPIFFS_EDITOR
+#define ASYNCWEBSERVER_SPIFFS_EDITOR 0
+#endif
+
+#ifndef ASYNCWEBSERVER_SDFAT_SUPPORT
+#define ASYNCWEBSERVER_SDFAT_SUPPORT 0
+#endif
+
+#ifndef CONFIG_ASYNC_TCP_STACK_SIZE
+#define CONFIG_ASYNC_TCP_STACK_SIZE (8192*2)
+#endif
+
+#ifdef ASYNCWEBSERVER_REGEX
+#define ASYNCWEBSERVER_REGEX_ATTRIBUTE
+#else
+#define ASYNCWEBSERVER_REGEX_ATTRIBUTE __attribute__((warning("ASYNCWEBSERVER_REGEX not defined")))
+#endif
+
+#ifdef ASYNCWEBSERVER_DEBUG
+#define DEBUGF(...) Serial.printf(__VA_ARGS__)
+#else
+#define DEBUGF(...)
+#endif

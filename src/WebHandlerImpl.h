@@ -73,7 +73,7 @@ public:
   }
 };
 
-#ifdef ASYNCWEBSERVER_SDFAT_SUPPORT
+#if ASYNCWEBSERVER_SDFAT_SUPPORT
 class AsyncStaticSdFatWebHandler : public AsyncWebHandler {
 
 private:

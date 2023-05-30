@@ -38,20 +38,11 @@
 #error Platform not supported
 #endif
 
-#ifdef ASYNCWEBSERVER_SDFAT_SUPPORT
+#include "AsyncWebserver-config.h"
+#include "AsyncTCP-config.h"
+
+#if ASYNCWEBSERVER_SDFAT_SUPPORT
 #include "SdFat.h"
-#endif
-
-#ifdef ASYNCWEBSERVER_REGEX
-#define ASYNCWEBSERVER_REGEX_ATTRIBUTE
-#else
-#define ASYNCWEBSERVER_REGEX_ATTRIBUTE __attribute__((warning("ASYNCWEBSERVER_REGEX not defined")))
-#endif
-
-#ifdef ASYNCWEBSERVER_DEBUG
-#define DEBUGF(...) Serial.printf(__VA_ARGS__)
-#else
-#define DEBUGF(...)
 #endif
 
 class AsyncWebServer;
@@ -415,7 +406,9 @@ class AsyncWebServer {
     AsyncWebServer(uint16_t port);
     ~AsyncWebServer();
 
-    void begin();
+    void begin(const int32_t core = CONFIG_ASYNC_TCP_RUNNING_CORE,
+        const uint32_t prio = CONFIG_ASYNC_TCP_PRIORITY, 
+        const uint32_t stack_size = CONFIG_ASYNC_TCP_STACK_SIZE);
     void end();
 
 #if ASYNC_TCP_SSL_ENABLED
@@ -436,7 +429,7 @@ class AsyncWebServer {
     AsyncCallbackWebHandler& on(const char* uri, WebRequestMethodComposite method, ArRequestHandlerFunction onRequest, ArUploadHandlerFunction onUpload, ArBodyHandlerFunction onBody);
 
     AsyncStaticWebHandler& serveStatic(const char* uri, fs::FS& fs, const char* path, const char* cache_control = NULL);
-#ifdef ASYNCWEBSERVER_SDFAT_SUPPORT
+#if ASYNCWEBSERVER_SDFAT_SUPPORT
    AsyncStaticSdFatWebHandler& serveStatic(const char* uri, SdFat *sdfat, const char* path, const char* cache_control = NULL);
 #endif
     void onNotFound(ArRequestHandlerFunction fn);  //called when handler is not assigned
