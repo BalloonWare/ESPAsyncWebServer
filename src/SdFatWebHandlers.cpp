@@ -100,6 +100,7 @@ bool AsyncStaticSdFatWebHandler::canHandle(AsyncWebServerRequest *request) {
 
   if (request->method() != HTTP_GET || !request->url().startsWith(_uri) ||
       !request->isExpectedRequestedConnType(RCT_DEFAULT, RCT_HTTP)) {
+        DEBUGF("[AsyncStaticSdFatWebHandler::canHandle] not HTTP_GET - FAIL\n");
     return false;
   }
   request->addInterestingHeader("Range");
@@ -112,9 +113,10 @@ bool AsyncStaticSdFatWebHandler::canHandle(AsyncWebServerRequest *request) {
     if (_cache_control.length())
       request->addInterestingHeader("If-None-Match");
 
-    DEBUGF("[AsyncStaticSdFatWebHandler::canHandle] TRUE\n");
+    DEBUGF("[AsyncStaticSdFatWebHandler::canHandle] url='%s' TRUE\n", request->url().c_str());
     return true;
   }
+    DEBUGF("[AsyncStaticSdFatWebHandler::canHandle] url='%s' _getFile FAIL \n", request->url().c_str());
 
   return false;
 }
